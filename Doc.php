@@ -9,7 +9,8 @@ else if (php_sapi_name() == "cli") Teinte_Doc::cli();
 /**
  * Sample pilot for Teinte transformations of XML/TEI
  */
-class Teinte_Doc {
+class Teinte_Doc
+{
   /** TEI/XML DOM Document to process */
   private $_dom;
   /** Xpath processor */
@@ -30,17 +31,18 @@ class Teinte_Doc {
   private $_xslfile;
   /** formats */
   public static $ext = array(
-    'article' => '-art.html',
+    'article' => '_art.html',
     'html' => '.html',
     'iramuteq' => '.txt',
     'markdown' => '.txt',
     'naked' => '.txt',
-    'toc' => '-toc.html',
+    'toc' => '_toc.html',
   );
   /**
    * Constructor, load file and prepare work
    */
-  public function __construct($tei) {
+  public function __construct($tei)
+  {
     if (is_a( $tei, 'DOMDocument' ) ) {
       $this->_dom = $tei;
     }
@@ -49,13 +51,19 @@ class Teinte_Doc {
       $this->_filemtime = filemtime( $tei );
       $this->_filesize = filesize( $tei ); // ?? URL ?
       $this->_filename = pathinfo( $tei, PATHINFO_FILENAME );
-      $this->_dom( $tei );
+      // loading error, do something ?
+      if ( !$this->_dom( $tei ) ) throw new Exception("BAD XML");
     }
     else {
       throw new Exception('Teinte, what is it? '.print_r($tei, true));
     }
     $this->_xsldom = new DOMDocument();
     $this->xpath();
+  }
+
+  public function isEmpty()
+  {
+    return !$this->_dom;
   }
 
  /**
@@ -95,7 +103,8 @@ class Teinte_Doc {
   /**
    * Book metadata
    */
-  public function meta() {
+  public function meta()
+  {
     $meta = array();
     $meta['code'] = pathinfo($this->_file, PATHINFO_FILENAME);
     $nl = $this->_xpath->query("/*/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:author");
@@ -153,14 +162,16 @@ class Teinte_Doc {
   /**
    *
    */
-  public function export($format, $destfile=null) {
+  public function export($format, $destfile=null)
+  {
     if (isset(self::$ext[$format])) return call_user_func(array($this, $format), $destfile);
     else if (STDERR) fwrite(STDERR, $format." ? format not yet implemented\n");
   }
   /**
    * Output toc
    */
-  public function toc( $destfile=null, $root = "ol") {
+  public function toc( $destfile=null, $root = "ol")
+  {
     return $this->transform(
       dirname(__FILE__).'/tei2toc.xsl',
       $destfile,
@@ -173,7 +184,8 @@ class Teinte_Doc {
   /**
    * Output an html fragment
    */
-  public function article( $destfile=null ) {
+  public function article( $destfile=null )
+  {
     return $this->transform(
       dirname(__FILE__).'/tei2html.xsl',
       $destfile,
@@ -185,7 +197,8 @@ class Teinte_Doc {
   /**
    * Output html
    */
-  public function html($destfile=null, $theme = null) {
+  public function html($destfile=null, $theme = null)
+  {
     if (!$theme) $theme = 'http://oeuvres.github.io/Teinte/'; // where to find web assets like css and js for html file
     return $this->transform(
       dirname(__FILE__).'/tei2html.xsl',
@@ -252,7 +265,8 @@ class Teinte_Doc {
    * $destdir : a folder if images should be copied
    * return : a doc with updated links to image
    */
-  private function images( $href=null, $destdir=null) {
+  private function images( $href=null, $destdir=null)
+  {
     if ($destdir) $destdir=rtrim($destdir, '/\\').'/';
     // copy linked images in an images folder, and modify relative link
     // clone the original doc, links to picture will be modified
@@ -271,7 +285,8 @@ class Teinte_Doc {
   /**
    * Process one image
    */
-  public function img($att, $hrefdir="", $destdir=null) {
+  public function img($att, $hrefdir="", $destdir=null)
+  {
     if (!isset($att) || !$att || !$att->value) return;
     $src=$att->value;
     // return if data image
@@ -320,7 +335,8 @@ class Teinte_Doc {
     * Support of some html5 tag to strip not indexable content.
     * TODO, test performances of a char parser
     */
-   static public function detag($html) {
+   static public function detag($html)
+   {
      // preg_replace_callback is safer and 2x faster than the /e modifier
      $html=preg_replace_callback(
        array(
@@ -343,7 +359,8 @@ class Teinte_Doc {
    /**
     * blanking a string, keeping new lines
     */
-   static public function blank($string) {
+   static public function blank($string)
+   {
      if(is_array($string)) $string=$string[0];
      // if (strpos($string, '<tt class="num')===0) return "_NUM_".str_repeat(" ", strlen($string) - 5);
      return preg_replace("/[^\n]/", " ", $string);
@@ -404,25 +421,28 @@ class Teinte_Doc {
   /**
    * Set and build a dom privately
    */
-  private function _dom( $xmlfile ) {
+  private function _dom( $xmlfile )
+  {
     $this->_dom = new DOMDocument();
     $this->_dom->preserveWhiteSpace = false;
     $this->_dom->formatOutput=true;
     $this->_dom->substituteEntities=true;
-    $this->_dom->load($xmlfile, LIBXML_NOENT | LIBXML_NONET | LIBXML_NSCLEAN | LIBXML_NOCDATA | LIBXML_COMPACT | LIBXML_PARSEHUGE | LIBXML_NOWARNING);
-    return $this->_dom;
+    $ret = $this->_dom->load($xmlfile, LIBXML_NOENT | LIBXML_NONET | LIBXML_NSCLEAN | LIBXML_NOCDATA | LIBXML_NOWARNING);
+    return $ret;
   }
   /**
    * Get the dom
    */
-  public function dom() {
+  public function dom()
+  {
     return $this->_dom;
   }
 
   /**
    * Command line transform
    */
-  public static function cli() {
+  public static function cli()
+  {
     $formats=implode( '|', array_keys( self::$ext ) );
     array_shift($_SERVER['argv']); // shift first arg, the script filepath
     if (!count($_SERVER['argv'])) exit('
