@@ -265,7 +265,12 @@ END;
     $values = array_replace( $values, array_intersect_key( $meta, $values ) );
     // replace in values, but do not add keys, and change their order
     if ( is_array( $props ) ) $values = array_replace( $values, array_intersect_key( $props, $values ) );
+    if ( !$values['title'] ) {
+      $values['title'] = $values['code'];
+      $this->log( E_USER_ERROR, $values['code']." <title> unfound" );
+    }
     $values = array_values( $values );
+
     $this->_q['record']->execute( $values ); // no keys for values
     $lastid = $this->pdo->lastInsertId();
     $this->_q['search']->execute( array( $lastid, $teinte->ft() ) );
@@ -296,7 +301,7 @@ END;
   /**
    * Explore some folders
    */
-  public function glob( $glob=null, $force=false )
+  public function glob( $glob=null, $force=false, $props=null )
   {
     $this->_cods = array(); // store the codes of each file in the srclist to delete some files
     if ( !$glob ) $glob = $this->conf['srcglob'];
