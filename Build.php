@@ -214,7 +214,7 @@ END;
       else if ( $type == 'iramuteq' ) $teinte->iramuteq( $destfile );
       else if ( $type == 'docx' ) Toff_Tei2docx::docx( $teinte->file(), $destfile );
       else if ( $type == 'epub' ) {
-        $livre = new Livrable_Tei2epub( $teinte->file(), $this->_logger );
+        $livre = new Livrablebalzac_Tei2epub( $teinte->file(), $this->_logger );
         $livre->epub( $destfile );
       }
       // Attention, do kindle after epub
@@ -281,7 +281,7 @@ END;
    */
   public function sets()
   {
-    if ( !isset($this->conf['sets']) ) continue;
+    if ( !isset($this->conf['sets']) ) return;
     // for deletions, store the codes of existingfiles
     $this->_cods = array();
     $oldlog = $this->loglevel;
@@ -473,7 +473,7 @@ END;
   {
     if(self::$_deps) return;
     // Deps
-    $inc = dirname(__FILE__).'/../Livrable/Tei2epub.php';
+    $inc = dirname(__FILE__).'/../Livrablebalzac/Tei2epub.php';
     if (!file_exists($inc)) {
       echo "Impossible de trouver ".realpath(dirname(__FILE__).'/../')."/Livrable/
     Vous pouvez le télécharger sur https://github.com/oeuvres/Livrable\n";
