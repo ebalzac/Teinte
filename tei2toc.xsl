@@ -426,7 +426,7 @@ Dégager une ligne biliographique d'un élément, avec des enregistrements bibli
 -->
   <xsl:template match="tei:fileDesc " mode="bibl">
     <!-- titre, requis -->
-    <xsl:apply-templates select="tei:titleStmt/tei:title" mode="bibl"/>
+    <xsl:apply-templates select="tei:titleStmt/tei:title/@main" mode="bibl"/>
     <xsl:if test="tei:titleStmt/tei:principal">
       <!-- direction, requis -->
       <xsl:text>, dir. </xsl:text>
