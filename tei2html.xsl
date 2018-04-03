@@ -966,7 +966,7 @@ Tables
     <xsl:choose>
       <!-- probablement vers vide pour espacement -->
       <xsl:when test="normalize-space(.) =''">
-        <br/>
+        <!-- <br/> -->
       </xsl:when>
       <xsl:otherwise>
         <div>
