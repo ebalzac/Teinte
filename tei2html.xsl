@@ -2271,8 +2271,9 @@ Call that in
         <xsl:when test=" $pb ">
           <!-- first notes before the first pb, slow ? -->
           <xsl:variable name="notes1" select=".//tei:note[following::tei:pb[generate-id(.) = generate-id($pb[1])]]"/>
+          <div class="page">
           <xsl:if test="$notes1">
-            <div class="page">
+            
               <xsl:for-each select="$notes1[@resp = 'author'][not(@place = 'margin')]">
                 <xsl:call-template name="note"/>
               </xsl:for-each>
@@ -2282,7 +2283,7 @@ Call that in
               <xsl:for-each select="$notes1[not(@resp) or (@resp != 'editor' and @resp != 'author')][not(@place = 'margin')]">
                 <xsl:call-template name="note"/>
               </xsl:for-each>
-            </div>
+            
           </xsl:if>
           <xsl:for-each select="$pb">
             <xsl:variable name="notes4page">
@@ -2304,15 +2305,14 @@ Call that in
                 </xsl:if>
               </xsl:for-each>
             </xsl:variable>
+            
             <xsl:if test="$notes4page != ''">
-              <div class="page">
-                <div class="b note-page">
-                  <xsl:call-template name="a"/>
-                </div>
+              
                 <xsl:copy-of select="$notes4page"/>
-              </div>
+             
             </xsl:if>
-          </xsl:for-each>
+            
+          </xsl:for-each></div>
         </xsl:when>
         <!-- handle notes by split sections ? -->
         <xsl:when test="$cont and function-available('exslt:node-set')">
